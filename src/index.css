@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  }
+  
+  body {
+    @apply bg-gradient-bg min-h-screen text-slate-800;
+    line-height: 1.6;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-2xl p-6 mb-6 shadow-lg border border-slate-200 transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5;
+  }
+  
+  .btn {
+    @apply px-6 py-3 bg-gradient-primary text-white border-none rounded-lg cursor-pointer font-semibold transition-all duration-300 inline-flex items-center gap-2 hover:-translate-y-0.5 hover:shadow-lg;
+  }
+  
+  .btn-secondary {
+    @apply bg-gradient-to-r from-slate-500 to-slate-600;
+  }
+  
+  .form-group {
+    @apply flex flex-col;
+  }
+  
+  .form-group label {
+    @apply font-semibold mb-2 text-slate-700;
+  }
+  
+  .form-group input,
+  .form-group select {
+    @apply p-4 border-2 border-slate-200 rounded-lg text-base transition-all duration-300 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100;
+  }
+  
+  .nav-tab {
+    @apply px-6 py-4 bg-transparent border-none rounded-lg cursor-pointer font-semibold text-slate-500 transition-all duration-300 whitespace-nowrap hover:bg-slate-50 hover:text-primary-500;
+  }
+  
+  .nav-tab.active {
+    @apply bg-gradient-primary text-white shadow-lg -translate-y-0.5;
+  }
+  
+  .result-item {
+    @apply flex justify-between items-center py-4 border-b border-slate-100 last:border-b-0;
+  }
+  
+  .result-label {
+    @apply font-semibold text-slate-700;
+  }
+  
+  .result-value {
+    @apply text-xl font-bold text-primary-500;
+  }
+  
+  .summary-card {
+    @apply bg-gradient-to-br from-white to-slate-50 rounded-2xl p-6 text-center border-2 border-slate-200 transition-all duration-300 hover:border-primary-500 hover:-translate-y-1;
+  }
+  
+  .summary-card h3 {
+    @apply text-slate-500 text-sm uppercase tracking-wide mb-2;
+  }
+  
+  .summary-card .amount {
+    @apply text-3xl font-bold text-primary-500;
+  }
+}
