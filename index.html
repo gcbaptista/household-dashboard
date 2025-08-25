@@ -359,6 +359,10 @@
             display: none;
         }
 
+        .notification.error {
+            background: linear-gradient(135deg, var(--error-color), #dc2626);
+        }
+
         .notification.show {
             display: block;
             animation: slideIn 0.3s ease-out;
@@ -381,7 +385,7 @@
 
         <div class="nav-tabs">
             <button class="nav-tab active" onclick="showTab('overview')">📊 Overview</button>
-            <button class="nav-tab" onclick="showTab('rent')">🏠 Rent & Salary</button>
+            <button class="nav-tab" onclick="showTab('rent')">🏠 Rent Split</button>
             <button class="nav-tab" onclick="showTab('utilities')">⚡ Utilities</button>
             <button class="nav-tab" onclick="showTab('furniture')">🪑 Furniture</button>
             <button class="nav-tab" onclick="showTab('groceries')">🛒 Groceries</button>
@@ -434,21 +438,21 @@
             </div>
         </div>
 
-        <!-- Rent & Salary Tab -->
+        <!-- Rent Split Tab -->
         <div id="rent" class="tab-content">
             <div class="card">
-                <h2>🏠 Rent & Salary Management</h2>
+                <h2>🏠 Rent Split Calculator</h2>
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Monthly Rent Amount</label>
                         <input type="number" id="rentAmount" placeholder="1200" value="1200">
                     </div>
                     <div class="form-group">
-                        <label>Gonçalo's Salary (Previous Month)</label>
+                        <label>Gonçalo's Monthly Income</label>
                         <input type="number" id="salaryA" placeholder="2500" value="2500">
                     </div>
                     <div class="form-group">
-                        <label>Anita's Salary (Previous Month)</label>
+                        <label>Anita's Monthly Income</label>
                         <input type="number" id="salaryB" placeholder="2000" value="2000">
                     </div>
                     <div class="form-group">
@@ -475,41 +479,25 @@
             </div>
 
             <div class="card">
-                <h2>📊 Salary History</h2>
-                <table class="history-table">
-                    <thead>
-                        <tr>
-                            <th>Month</th>
-                            <th>Person A</th>
-                            <th>Person B</th>
-                            <th>A's Share</th>
-                            <th>B's Share</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>July 2025</td>
-                            <td>€2,500</td>
-                            <td>€2,000</td>
-                            <td>€667</td>
-                            <td>€533</td>
-                        </tr>
-                        <tr>
-                            <td>June 2025</td>
-                            <td>€2,400</td>
-                            <td>€2,100</td>
-                            <td>€640</td>
-                            <td>€560</td>
-                        </tr>
-                        <tr>
-                            <td>May 2025</td>
-                            <td>€2,600</td>
-                            <td>€1,900</td>
-                            <td>€693</td>
-                            <td>€507</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <h2>ℹ️ About Rent Splitting</h2>
+                <div class="results-section">
+                    <div class="result-item">
+                        <span class="result-label">Purpose:</span>
+                        <span class="result-value">Calculate fair rent contributions</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Proportional Method:</span>
+                        <span class="result-value">Based on income ratio</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Equal Method:</span>
+                        <span class="result-value">50/50 split regardless of income</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Utilities:</span>
+                        <span class="result-value">Handled separately in Utilities tab</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -527,32 +515,120 @@
                         <input type="number" id="gas" placeholder="40" step="0.01">
                     </div>
                     <div class="form-group">
+                        <label>Water (Variable)</label>
+                        <input type="number" id="water" placeholder="25" step="0.01">
+                    </div>
+                    <div class="form-group">
                         <label>Internet + TV + Mobile Bundle (Fixed)</label>
                         <input type="number" id="bundle" placeholder="75" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Other Utilities</label>
+                        <input type="number" id="other" placeholder="0" step="0.01">
                     </div>
                     <div class="form-group">
                         <label>Month</label>
                         <input type="month" id="utilityMonth" value="2025-08">
                     </div>
+                    <div class="form-group">
+                        <label>Split Method</label>
+                        <select id="utilitySplitMethod" onchange="toggleSalaryInputs(); updateUtilitiesDisplay()">
+                            <option value="equal">Equal Split (50/50)</option>
+                            <option value="proportional">Proportional to Income</option>
+                            <option value="custom">Custom Ratio</option>
+                        </select>
+                    </div>
                 </div>
-                <button class="btn" onclick="addUtility()">Add Utilities</button>
+                
+                <!-- Salary inputs for proportional split -->
+                <div id="utilitySalaryInputs" class="card" style="display: none;">
+                    <h3>💰 Monthly Salaries</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Gonçalo's Salary</label>
+                            <input type="number" id="utilitySalaryA" placeholder="2500" step="0.01" onchange="updateUtilitiesDisplay()">
+                        </div>
+                        <div class="form-group">
+                            <label>Anita's Salary</label>
+                            <input type="number" id="utilitySalaryB" placeholder="2000" step="0.01" onchange="updateUtilitiesDisplay()">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Custom ratio inputs -->
+                <div id="utilityCustomInputs" class="card" style="display: none;">
+                    <h3>⚖️ Custom Split Ratio</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Gonçalo's Percentage</label>
+                            <input type="number" id="utilityCustomA" placeholder="60" min="0" max="100" step="1" onchange="updateCustomRatio(); updateUtilitiesDisplay()">
+                        </div>
+                        <div class="form-group">
+                            <label>Anita's Percentage</label>
+                            <input type="number" id="utilityCustomB" placeholder="40" min="0" max="100" step="1" readonly>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn" onclick="addUtility()">💾 Save Monthly Utilities</button>
                 
                 <div class="results-section">
                     <div class="result-item">
-                        <span class="result-label">Total Utilities:</span>
-                        <span class="result-value" id="totalUtilities">€140</span>
+                        <span class="result-label">Total This Month:</span>
+                        <span class="result-value" id="totalUtilities">€165</span>
                     </div>
                     <div class="result-item">
-                        <span class="result-label">Each Person Pays:</span>
-                        <span class="result-value" id="utilityPerPerson">€70</span>
+                        <span class="result-label">Gonçalo's Share:</span>
+                        <span class="result-value" id="utilityPersonA">€82.50 (50%)</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Anita's Share:</span>
+                        <span class="result-value" id="utilityPersonB">€82.50 (50%)</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Average Last 3 Months:</span>
+                        <span class="result-value" id="utilityAverage">€158</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">vs Last Month:</span>
+                        <span class="result-value" id="utilityChange">↑ €12 (+7.8%)</span>
                     </div>
                 </div>
             </div>
 
             <div class="card">
-                <h2>📈 Utilities Trend</h2>
+                <h2>📊 Utilities History</h2>
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Electricity</th>
+                            <th>Gas</th>
+                            <th>Water</th>
+                            <th>Internet/Bundle</th>
+                            <th>Other</th>
+                            <th>Total</th>
+                            <th>Gonçalo's Share</th>
+                            <th>Anita's Share</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="utilitiesHistoryTable">
+                        <!-- Dynamic content populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>📈 Utilities Trends</h2>
                 <div class="chart-container">
                     <canvas id="utilitiesChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📊 Breakdown Analysis</h2>
+                <div class="chart-container">
+                    <canvas id="utilitiesBreakdownChart"></canvas>
                 </div>
             </div>
         </div>
@@ -747,7 +823,10 @@
             if (tabName === 'overview') {
                 setTimeout(initSpendingChart, 100);
             } else if (tabName === 'utilities') {
-                setTimeout(initUtilitiesChart, 100);
+                setTimeout(() => {
+                    initUtilitiesChart();
+                    initUtilitiesBreakdownChart();
+                }, 100);
             }
         }
 
@@ -796,19 +875,242 @@
             showNotification('Rent split calculated successfully!');
         }
 
-        // Add utility expense
+        // Utilities data storage (in real app, this would be in a database)
+        let utilitiesData = [
+            { 
+                month: '2025-08', 
+                electricity: 60, gas: 40, water: 25, bundle: 75, other: 0,
+                splitMethod: 'equal',
+                customA: 50, customB: 50
+            },
+            { 
+                month: '2025-07', 
+                electricity: 68, gas: 42, water: 22, bundle: 75, other: 8,
+                splitMethod: 'proportional',
+                customA: 55.6, customB: 44.4
+            },
+            { 
+                month: '2025-06', 
+                electricity: 62, gas: 38, water: 28, bundle: 75, other: 0,
+                splitMethod: 'equal',
+                customA: 50, customB: 50
+            },
+            { 
+                month: '2025-05', 
+                electricity: 55, gas: 35, water: 24, bundle: 75, other: 15,
+                splitMethod: 'custom',
+                customA: 60, customB: 40
+            }
+        ];
+
+        // Add or update utility expense
         function addUtility() {
             const electricity = parseFloat(document.getElementById('electricity').value) || 0;
             const gas = parseFloat(document.getElementById('gas').value) || 0;
+            const water = parseFloat(document.getElementById('water').value) || 0;
             const bundle = parseFloat(document.getElementById('bundle').value) || 0;
+            const other = parseFloat(document.getElementById('other').value) || 0;
+            const month = document.getElementById('utilityMonth').value;
+            const splitMethod = document.getElementById('utilitySplitMethod').value;
             
-            const total = electricity + gas + bundle;
-            const perPerson = total / 2;
+            if (!month) {
+                showNotification('Please select a month!', 'error');
+                return;
+            }
             
-            document.getElementById('totalUtilities').textContent = `€${total.toFixed(0)}`;
-            document.getElementById('utilityPerPerson').textContent = `€${perPerson.toFixed(0)}`;
+            // Get custom ratio data (only store this, not salaries)
+            const customA = parseFloat(document.getElementById('utilityCustomA').value) || 50;
+            const customB = parseFloat(document.getElementById('utilityCustomB').value) || 50;
             
-            showNotification('Utilities added successfully!');
+            const total = electricity + gas + water + bundle + other;
+            
+            // Add or update the data (no salary storage)
+            const existingIndex = utilitiesData.findIndex(item => item.month === month);
+            const newEntry = { 
+                month, electricity, gas, water, bundle, other,
+                splitMethod, customA, customB
+            };
+            
+            if (existingIndex >= 0) {
+                utilitiesData[existingIndex] = newEntry;
+                showNotification('Utilities updated successfully!');
+            } else {
+                utilitiesData.unshift(newEntry);
+                utilitiesData.sort((a, b) => b.month.localeCompare(a.month));
+                showNotification('Utilities added successfully!');
+            }
+            
+            // Update displays
+            updateUtilitiesDisplay();
+            updateUtilitiesHistory();
+            
+            // Clear form
+            document.getElementById('electricity').value = '';
+            document.getElementById('gas').value = '';
+            document.getElementById('water').value = '';
+            document.getElementById('bundle').value = '';
+            document.getElementById('other').value = '';
+        }
+
+        // Update utilities display section
+        function updateUtilitiesDisplay() {
+            const currentMonth = document.getElementById('utilityMonth').value;
+            const currentData = utilitiesData.find(item => item.month === currentMonth);
+            
+            if (currentData) {
+                const total = currentData.electricity + currentData.gas + currentData.water + currentData.bundle + currentData.other;
+                
+                // Calculate split based on current form inputs
+                const splitMethod = document.getElementById('utilitySplitMethod').value;
+                let shareA, shareB;
+                
+                if (splitMethod === 'equal') {
+                    shareA = shareB = total / 2;
+                } else if (splitMethod === 'proportional') {
+                    // Use current salary inputs only (not stored)
+                    const salaryA = parseFloat(document.getElementById('utilitySalaryA').value) || 2500;
+                    const salaryB = parseFloat(document.getElementById('utilitySalaryB').value) || 2000;
+                    const totalSalary = salaryA + salaryB;
+                    shareA = (salaryA / totalSalary) * total;
+                    shareB = (salaryB / totalSalary) * total;
+                } else if (splitMethod === 'custom') {
+                    // Use current custom ratio inputs or stored values
+                    const customA = parseFloat(document.getElementById('utilityCustomA').value) || currentData.customA || 50;
+                    const customB = parseFloat(document.getElementById('utilityCustomB').value) || currentData.customB || 50;
+                    shareA = total * (customA / 100);
+                    shareB = total * (customB / 100);
+                }
+                
+                const percentA = total > 0 ? ((shareA / total) * 100).toFixed(1) : 0;
+                const percentB = total > 0 ? ((shareB / total) * 100).toFixed(1) : 0;
+                
+                document.getElementById('totalUtilities').textContent = `€${total.toFixed(0)}`;
+                document.getElementById('utilityPersonA').textContent = `€${shareA.toFixed(2)} (${percentA}%)`;
+                document.getElementById('utilityPersonB').textContent = `€${shareB.toFixed(2)} (${percentB}%)`;
+                
+                // Calculate averages and changes
+                const last3Months = utilitiesData.slice(0, 3);
+                const average = last3Months.reduce((sum, item) => {
+                    return sum + item.electricity + item.gas + item.water + item.bundle + item.other;
+                }, 0) / last3Months.length;
+                
+                document.getElementById('utilityAverage').textContent = `€${average.toFixed(0)}`;
+                
+                // Calculate change from previous month
+                if (utilitiesData.length > 1) {
+                    const prevMonth = utilitiesData[1];
+                    const prevTotal = prevMonth.electricity + prevMonth.gas + prevMonth.water + prevMonth.bundle + prevMonth.other;
+                    const change = total - prevTotal;
+                    const changePercent = ((change / prevTotal) * 100).toFixed(1);
+                    const arrow = change > 0 ? '↑' : change < 0 ? '↓' : '→';
+                    const sign = change > 0 ? '+' : '';
+                    
+                    document.getElementById('utilityChange').textContent = `${arrow} €${Math.abs(change).toFixed(0)} (${sign}${changePercent}%)`;
+                }
+            }
+        }
+
+        // Update utilities history table
+        function updateUtilitiesHistory() {
+            const tbody = document.getElementById('utilitiesHistoryTable');
+            tbody.innerHTML = '';
+            
+            // Get current salary inputs for all calculations
+            const currentSalaryA = parseFloat(document.getElementById('utilitySalaryA').value) || 2500;
+            const currentSalaryB = parseFloat(document.getElementById('utilitySalaryB').value) || 2000;
+            const currentTotalSalary = currentSalaryA + currentSalaryB;
+            
+            utilitiesData.forEach(item => {
+                const total = item.electricity + item.gas + item.water + item.bundle + item.other;
+                const monthName = new Date(item.month + '-01').toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                
+                // Calculate split based on stored method but current salary inputs
+                let shareA, shareB;
+                const storedSplitMethod = item.splitMethod || 'equal';
+                
+                if (storedSplitMethod === 'equal') {
+                    shareA = shareB = total / 2;
+                } else if (storedSplitMethod === 'proportional') {
+                    // Use current salary inputs for all months
+                    shareA = (currentSalaryA / currentTotalSalary) * total;
+                    shareB = (currentSalaryB / currentTotalSalary) * total;
+                } else if (storedSplitMethod === 'custom') {
+                    const customA = item.customA || 50;
+                    const customB = item.customB || 50;
+                    shareA = total * (customA / 100);
+                    shareB = total * (customB / 100);
+                }
+                
+                // Add split method indicator
+                const splitIcon = storedSplitMethod === 'equal' ? '⚖️' : 
+                                storedSplitMethod === 'proportional' ? '📊' : '⚙️';
+                
+                const row = `
+                    <tr>
+                        <td>${monthName} ${splitIcon}</td>
+                        <td>€${item.electricity.toFixed(2)}</td>
+                        <td>€${item.gas.toFixed(2)}</td>
+                        <td>€${item.water.toFixed(2)}</td>
+                        <td>€${item.bundle.toFixed(2)}</td>
+                        <td>€${item.other.toFixed(2)}</td>
+                        <td><strong>€${total.toFixed(2)}</strong></td>
+                        <td><strong>€${shareA.toFixed(2)}</strong></td>
+                        <td><strong>€${shareB.toFixed(2)}</strong></td>
+                        <td><button class="btn-secondary" onclick="editUtility('${item.month}')">✏️ Edit</button></td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // Edit utility function
+        function editUtility(month) {
+            const data = utilitiesData.find(item => item.month === month);
+            if (data) {
+                // Load utility amounts
+                document.getElementById('electricity').value = data.electricity;
+                document.getElementById('gas').value = data.gas;
+                document.getElementById('water').value = data.water;
+                document.getElementById('bundle').value = data.bundle;
+                document.getElementById('other').value = data.other;
+                document.getElementById('utilityMonth').value = month;
+                
+                // Load split method and custom ratio (but not salary data)
+                document.getElementById('utilitySplitMethod').value = data.splitMethod || 'equal';
+                document.getElementById('utilityCustomA').value = data.customA || 50;
+                document.getElementById('utilityCustomB').value = data.customB || 50;
+                
+                // Show appropriate input sections
+                toggleSalaryInputs();
+                updateUtilitiesDisplay();
+                
+                showNotification(`Editing utilities for ${new Date(month + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`);
+            }
+        }
+
+        // Toggle salary/custom inputs based on split method
+        function toggleSalaryInputs() {
+            const splitMethod = document.getElementById('utilitySplitMethod').value;
+            const salaryInputs = document.getElementById('utilitySalaryInputs');
+            const customInputs = document.getElementById('utilityCustomInputs');
+            
+            if (splitMethod === 'proportional') {
+                salaryInputs.style.display = 'block';
+                customInputs.style.display = 'none';
+            } else if (splitMethod === 'custom') {
+                salaryInputs.style.display = 'none';
+                customInputs.style.display = 'block';
+            } else {
+                salaryInputs.style.display = 'none';
+                customInputs.style.display = 'none';
+            }
+        }
+
+        // Update custom ratio (ensure they add up to 100%)
+        function updateCustomRatio() {
+            const customA = parseFloat(document.getElementById('utilityCustomA').value) || 50;
+            const customB = 100 - customA;
+            document.getElementById('utilityCustomB').value = customB;
         }
 
         // Add furniture expense
@@ -895,22 +1197,36 @@
             const ctx = document.getElementById('utilitiesChart');
             if (!ctx || ctx.chart) return; // Prevent duplicate charts
             
+            // Get last 6 months of data
+            const chartData = utilitiesData.slice(0, 6).reverse();
+            const labels = chartData.map(item => {
+                return new Date(item.month + '-01').toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+            });
+            
             ctx.chart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['May', 'June', 'July', 'August'],
+                    labels: labels,
                     datasets: [{
                         label: 'Electricity',
-                        data: [55, 62, 68, 60],
+                        data: chartData.map(item => item.electricity),
                         backgroundColor: '#f59e0b'
                     }, {
                         label: 'Gas',
-                        data: [35, 38, 42, 40],
+                        data: chartData.map(item => item.gas),
                         backgroundColor: '#10b981'
                     }, {
-                        label: 'Internet/TV/Mobile',
-                        data: [75, 75, 75, 75],
+                        label: 'Water',
+                        data: chartData.map(item => item.water),
+                        backgroundColor: '#06b6d4'
+                    }, {
+                        label: 'Internet/Bundle',
+                        data: chartData.map(item => item.bundle),
                         backgroundColor: '#667eea'
+                    }, {
+                        label: 'Other',
+                        data: chartData.map(item => item.other),
+                        backgroundColor: '#8b5cf6'
                     }]
                 },
                 options: {
@@ -919,7 +1235,10 @@
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Utilities Breakdown (EUR)'
+                            text: 'Monthly Utilities Breakdown (EUR)'
+                        },
+                        legend: {
+                            position: 'bottom'
                         }
                     },
                     scales: {
@@ -940,9 +1259,70 @@
             });
         }
 
+        function initUtilitiesBreakdownChart() {
+            const ctx = document.getElementById('utilitiesBreakdownChart');
+            if (!ctx || ctx.chart) return; // Prevent duplicate charts
+            
+            // Get current month data for breakdown
+            const currentMonth = document.getElementById('utilityMonth').value;
+            const currentData = utilitiesData.find(item => item.month === currentMonth) || utilitiesData[0];
+            
+            if (!currentData) return;
+            
+            ctx.chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Electricity', 'Gas', 'Water', 'Internet/Bundle', 'Other'],
+                    datasets: [{
+                        data: [
+                            currentData.electricity,
+                            currentData.gas,
+                            currentData.water,
+                            currentData.bundle,
+                            currentData.other
+                        ],
+                        backgroundColor: [
+                            '#f59e0b',
+                            '#10b981',
+                            '#06b6d4',
+                            '#667eea',
+                            '#8b5cf6'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Utilities Breakdown - ${new Date(currentData.month + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`
+                        },
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                    return `${context.label}: €${context.parsed.toFixed(2)} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
         // Initialize the overview chart when page loads
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(initSpendingChart, 100);
+            toggleSalaryInputs(); // Initialize input visibility
+            updateUtilitiesDisplay();
+            updateUtilitiesHistory();
         });
     </script>
 </body>
