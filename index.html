@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Household Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f093fb;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --background-color: #f8fafc;
+            --card-background: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, var(--background-color) 0%, #e0e7ff 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            background: var(--card-background);
+            border-radius: 15px;
+            padding: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 15px 25px;
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: var(--background-color);
+            color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--card-background);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .form-group input, .form-group select {
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--text-secondary), #475569);
+        }
+
+        .results-section {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .result-value {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, var(--card-background), #f8fafc);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .summary-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .summary-card h3 {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .summary-card .amount {
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .history-table th,
+        .history-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .history-table th {
+            background: var(--background-color);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .history-table tr:hover {
+            background: var(--background-color);
+        }
+
+        .chart-container {
+            height: 300px;
+            margin: 20px 0;
+        }
+
+        .expense-entry {
+            display: flex;
+            gap: 15px;
+            align-items: end;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .expense-entry .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .expense-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .expense-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .expense-item:last-child {
+            border-bottom: none;
+        }
+
+        .expense-item:nth-child(even) {
+            background: var(--background-color);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .nav-tab {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .expense-entry {
+                flex-direction: column;
+            }
+            
+            .expense-entry .form-group {
+                min-width: 100%;
+            }
+        }
+
+        .notification {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .notification.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏠 Household Dashboard</h1>
+            <p>Managing our home together</p>
+        </div>
+
+        <div class="notification" id="notification"></div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('overview')">📊 Overview</button>
+            <button class="nav-tab" onclick="showTab('rent')">🏠 Rent & Salary</button>
+            <button class="nav-tab" onclick="showTab('utilities')">⚡ Utilities</button>
+            <button class="nav-tab" onclick="showTab('furniture')">🪑 Furniture</button>
+            <button class="nav-tab" onclick="showTab('groceries')">🛒 Groceries</button>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <h3>Monthly Rent Split</h3>
+                    <div class="amount">€1,200</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Utilities This Month</h3>
+                    <div class="amount">€140</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Groceries This Month</h3>
+                    <div class="amount">€320</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Furniture Investment</h3>
+                    <div class="amount">€950</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📈 Monthly Spending Trends</h2>
+                <div class="chart-container">
+                    <canvas id="spendingChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>💰 Current Balance</h2>
+                <div class="results-section">
+                    <div class="result-item">
+                        <span class="result-label">Personal expenses balance:</span>
+                        <span class="result-value">A owes B €40</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Joint account expenses:</span>
+                        <span class="result-value">€736 this month</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Next settlement due:</span>
+                        <span class="result-value">31 Aug, 2025</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rent & Salary Tab -->
+        <div id="rent" class="tab-content">
+            <div class="card">
+                <h2>🏠 Rent & Salary Management</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Monthly Rent Amount</label>
+                        <input type="number" id="rentAmount" placeholder="1200" value="1200">
+                    </div>
+                    <div class="form-group">
+                        <label>Gonçalo's Salary (Previous Month)</label>
+                        <input type="number" id="salaryA" placeholder="2500" value="2500">
+                    </div>
+                    <div class="form-group">
+                        <label>Anita's Salary (Previous Month)</label>
+                        <input type="number" id="salaryB" placeholder="2000" value="2000">
+                    </div>
+                    <div class="form-group">
+                        <label>Split Method</label>
+                        <select id="splitMethod">
+                            <option value="proportional">Proportional to Income</option>
+                            <option value="equal">Equal Split</option>
+                            <option value="custom">Custom Ratio</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn" onclick="calculateRent()">Calculate Split</button>
+                
+                <div class="results-section" id="rentResults">
+                    <div class="result-item">
+                        <span class="result-label">Gonçalo's Contribution (55.6%):</span>
+                        <span class="result-value">€667</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Anita's Contribution (44.4%):</span>
+                        <span class="result-value">€533</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📊 Salary History</h2>
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Person A</th>
+                            <th>Person B</th>
+                            <th>A's Share</th>
+                            <th>B's Share</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>July 2025</td>
+                            <td>€2,500</td>
+                            <td>€2,000</td>
+                            <td>€667</td>
+                            <td>€533</td>
+                        </tr>
+                        <tr>
+                            <td>June 2025</td>
+                            <td>€2,400</td>
+                            <td>€2,100</td>
+                            <td>€640</td>
+                            <td>€560</td>
+                        </tr>
+                        <tr>
+                            <td>May 2025</td>
+                            <td>€2,600</td>
+                            <td>€1,900</td>
+                            <td>€693</td>
+                            <td>€507</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Utilities Tab -->
+        <div id="utilities" class="tab-content">
+            <div class="card">
+                <h2>⚡ Utilities Tracking</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Electricity (Variable)</label>
+                        <input type="number" id="electricity" placeholder="60" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Natural Gas (Variable)</label>
+                        <input type="number" id="gas" placeholder="40" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Internet + TV + Mobile Bundle (Fixed)</label>
+                        <input type="number" id="bundle" placeholder="75" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Month</label>
+                        <input type="month" id="utilityMonth" value="2025-08">
+                    </div>
+                </div>
+                <button class="btn" onclick="addUtility()">Add Utilities</button>
+                
+                <div class="results-section">
+                    <div class="result-item">
+                        <span class="result-label">Total Utilities:</span>
+                        <span class="result-value" id="totalUtilities">€140</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Each Person Pays:</span>
+                        <span class="result-value" id="utilityPerPerson">€70</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📈 Utilities Trend</h2>
+                <div class="chart-container">
+                    <canvas id="utilitiesChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Furniture Tab -->
+        <div id="furniture" class="tab-content">
+            <div class="card">
+                <h2>🪑 Furniture Expenses</h2>
+                <div class="expense-entry">
+                    <div class="form-group">
+                        <label>Item Name</label>
+                        <input type="text" id="furnitureItem" placeholder="Dining table">
+                    </div>
+                    <div class="form-group">
+                        <label>Cost</label>
+                        <input type="number" id="furnitureCost" placeholder="400" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="furnitureCategory">
+                            <option value="living">Living Room</option>
+                            <option value="bedroom">Bedroom</option>
+                            <option value="kitchen">Kitchen</option>
+                            <option value="bathroom">Bathroom</option>
+                            <option value="office">Office</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="furnitureDate" value="2025-08-25">
+                    </div>
+                    <div class="form-group">
+                        <label>Paid By</label>
+                        <select id="furniturePaidBy">
+                            <option value="joint">Conta Conjunta</option>
+                            <option value="A">Person A</option>
+                            <option value="B">Person B</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="addFurniture()">Add Item</button>
+                </div>
+                
+                <div class="results-section">
+                    <div class="result-item">
+                        <span class="result-label">Total Furniture Investment:</span>
+                        <span class="result-value">€950</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Each Person's Share:</span>
+                        <span class="result-value">€475</span>
+                    </div>
+                </div>
+
+                <div class="expense-list">
+                    <div class="expense-item">
+                        <div>
+                            <strong>Sofa Set</strong> - Conta Conjunta<br>
+                            <small>15 Aug, 2025</small>
+                        </div>
+                        <span class="result-value">€600</span>
+                    </div>
+                    <div class="expense-item">
+                        <div>
+                            <strong>Coffee Table</strong> - Person A<br>
+                            <small>10 Aug, 2025</small>
+                        </div>
+                        <span class="result-value">€200</span>
+                    </div>
+                    <div class="expense-item">
+                        <div>
+                            <strong>Desk Chair</strong> - Person B<br>
+                            <small>5 Aug, 2025</small>
+                        </div>
+                        <span class="result-value">€150</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Groceries Tab -->
+        <div id="groceries" class="tab-content">
+            <div class="card">
+                <h2>🛒 Groceries Expenses</h2>
+                <div class="expense-entry">
+                    <div class="form-group">
+                        <label>Store Name</label>
+                        <input type="text" id="groceryStore" placeholder="Continente">
+                    </div>
+                    <div class="form-group">
+                        <label>Amount</label>
+                        <input type="number" id="groceryAmount" placeholder="65.50" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="groceryDate" value="2025-08-25">
+                    </div>
+                    <div class="form-group">
+                        <label>Paid By</label>
+                        <select id="groceryPaidBy">
+                            <option value="joint">Conta Conjunta</option>
+                            <option value="A">Person A</option>
+                            <option value="B">Person B</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="addGrocery()">Add Expense</button>
+                </div>
+                
+                <div class="results-section">
+                    <div class="result-item">
+                        <span class="result-label">Total This Month:</span>
+                        <span class="result-value">€320</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Conta Conjunta:</span>
+                        <span class="result-value">€136</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Person A Paid:</span>
+                        <span class="result-value">€112</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Person B Paid:</span>
+                        <span class="result-value">€72</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Personal Balance:</span>
+                        <span class="result-value">A owes B €20</span>
+                    </div>
+                </div>
+
+                <div class="expense-list">
+                    <div class="expense-item">
+                        <div>
+                            <strong>Continente</strong> - Conta Conjunta<br>
+                            <small>24 Aug, 2025</small>
+                        </div>
+                        <span class="result-value">€72.50</span>
+                    </div>
+                    <div class="expense-item">
+                        <div>
+                            <strong>Pingo Doce</strong> - Person A<br>
+                            <small>22 Aug, 2025</small>
+                        </div>
+                        <span class="result-value">€51.25</span>
+                    </div>
+                    <div class="expense-item">
+                        <div>
+                            <strong>Lidl</strong> - Conta Conjunta<br>
+                            <small>20 Aug, 2025</small>
+                        </div>
+                        <span class="result-value">€63.50</span>
+                    </div>
+                    <div class="expense-item">
+                        <div>
+                            <strong>Auchan</strong> - Person B<br>
+                            <small>18 Aug, 2025</small>
+                        </div>
+                        <span class="result-value">€72.00</span>
+                    </div>
+                    <div class="expense-item">
+                        <div>
+                            <strong>Mercadona</strong> - Person A<br>
+                            <small>16 Aug, 2025</small>
+                        </div>
+                        <span class="result-value">€60.75</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked nav tab
+            event.target.classList.add('active');
+
+            // Initialize charts when tabs are shown
+            if (tabName === 'overview') {
+                setTimeout(initSpendingChart, 100);
+            } else if (tabName === 'utilities') {
+                setTimeout(initUtilitiesChart, 100);
+            }
+        }
+
+        // Notification system
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification show ${type}`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Rent calculation
+        function calculateRent() {
+            const rent = parseFloat(document.getElementById('rentAmount').value) || 1200;
+            const salaryA = parseFloat(document.getElementById('salaryA').value) || 2500;
+            const salaryB = parseFloat(document.getElementById('salaryB').value) || 2000;
+            const splitMethod = document.getElementById('splitMethod').value;
+            
+            let shareA, shareB;
+            
+            if (splitMethod === 'equal') {
+                shareA = shareB = rent / 2;
+            } else if (splitMethod === 'proportional') {
+                const totalSalary = salaryA + salaryB;
+                shareA = (salaryA / totalSalary) * rent;
+                shareB = (salaryB / totalSalary) * rent;
+            }
+            
+            const percentA = ((shareA / rent) * 100).toFixed(1);
+            const percentB = ((shareB / rent) * 100).toFixed(1);
+            
+            document.getElementById('rentResults').innerHTML = `
+                <div class="result-item">
+                    <span class="result-label">Person A Contribution (${percentA}%):</span>
+                    <span class="result-value">€${shareA.toFixed(0)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Person B Contribution (${percentB}%):</span>
+                    <span class="result-value">€${shareB.toFixed(0)}</span>
+                </div>
+            `;
+            
+            showNotification('Rent split calculated successfully!');
+        }
+
+        // Add utility expense
+        function addUtility() {
+            const electricity = parseFloat(document.getElementById('electricity').value) || 0;
+            const gas = parseFloat(document.getElementById('gas').value) || 0;
+            const bundle = parseFloat(document.getElementById('bundle').value) || 0;
+            
+            const total = electricity + gas + bundle;
+            const perPerson = total / 2;
+            
+            document.getElementById('totalUtilities').textContent = `€${total.toFixed(0)}`;
+            document.getElementById('utilityPerPerson').textContent = `€${perPerson.toFixed(0)}`;
+            
+            showNotification('Utilities added successfully!');
+        }
+
+        // Add furniture expense
+        function addFurniture() {
+            const item = document.getElementById('furnitureItem').value;
+            const cost = parseFloat(document.getElementById('furnitureCost').value);
+            
+            if (item && cost) {
+                showNotification(`${item} added for €${cost.toFixed(2)}!`);
+                
+                // Clear form
+                document.getElementById('furnitureItem').value = '';
+                document.getElementById('furnitureCost').value = '';
+            }
+        }
+
+        // Add grocery expense
+        function addGrocery() {
+            const store = document.getElementById('groceryStore').value;
+            const amount = parseFloat(document.getElementById('groceryAmount').value);
+            
+            if (store && amount) {
+                showNotification(`€${amount.toFixed(2)} expense at ${store} added!`);
+                
+                // Clear form
+                document.getElementById('groceryStore').value = '';
+                document.getElementById('groceryAmount').value = '';
+            }
+        }
+
+        // Initialize charts
+        function initSpendingChart() {
+            const ctx = document.getElementById('spendingChart');
+            if (!ctx || ctx.chart) return; // Prevent duplicate charts
+            
+            ctx.chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['May', 'June', 'July', 'August'],
+                    datasets: [{
+                        label: 'Rent',
+                        data: [1200, 1200, 1200, 1200],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Utilities',
+                        data: [125, 135, 145, 140],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Groceries',
+                        data: [280, 315, 340, 320],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Monthly Expenses in EUR'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '€' + value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initUtilitiesChart() {
+            const ctx = document.getElementById('utilitiesChart');
+            if (!ctx || ctx.chart) return; // Prevent duplicate charts
+            
+            ctx.chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['May', 'June', 'July', 'August'],
+                    datasets: [{
+                        label: 'Electricity',
+                        data: [55, 62, 68, 60],
+                        backgroundColor: '#f59e0b'
+                    }, {
+                        label: 'Gas',
+                        data: [35, 38, 42, 40],
+                        backgroundColor: '#10b981'
+                    }, {
+                        label: 'Internet/TV/Mobile',
+                        data: [75, 75, 75, 75],
+                        backgroundColor: '#667eea'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Utilities Breakdown (EUR)'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '€' + value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize the overview chart when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(initSpendingChart, 100);
+        });
+    </script>
+</body>
+</html>
