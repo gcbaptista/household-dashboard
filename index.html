@@ -372,6 +372,225 @@
             from { opacity: 0; transform: translateX(-100%); }
             to { opacity: 1; transform: translateX(0); }
         }
+
+        /* Calendar Styles */
+        .calendar-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-controls h3 {
+            margin: 0;
+            color: var(--primary-color);
+            font-size: 1.5em;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .calendar-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 15px 5px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .calendar-day {
+            background: var(--card-background);
+            min-height: 80px;
+            padding: 8px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calendar-day:hover {
+            background: var(--background-color);
+        }
+
+        .calendar-day.other-month {
+            background: #f8f9fa;
+            color: #6c757d;
+        }
+
+        .calendar-day.today {
+            background: linear-gradient(135deg, var(--accent-color), #f093fb);
+            color: white;
+        }
+
+        .calendar-day.has-events {
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .day-number {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .day-events {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .day-event {
+            background: var(--primary-color);
+            color: white;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 0.7em;
+            line-height: 1.2;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .day-event.rent { background: #f59e0b; }
+        .day-event.utilities { background: #10b981; }
+        .day-event.groceries { background: #8b5cf6; }
+        .day-event.furniture { background: #ef4444; }
+        .day-event.maintenance { background: #6b7280; }
+        .day-event.cleaning { background: #06b6d4; }
+        .day-event.personal { background: #f97316; }
+
+        /* Event List Styles */
+        .event-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .event-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            gap: 15px;
+            transition: background-color 0.2s ease;
+        }
+
+        .event-item:hover {
+            background: var(--background-color);
+        }
+
+        .event-item:last-child {
+            border-bottom: none;
+        }
+
+        .event-date {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 60px;
+            padding: 10px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .event-day {
+            font-size: 1.5em;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .event-month {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .event-details {
+            flex: 1;
+        }
+
+        .event-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .event-description {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .event-time {
+            color: var(--text-secondary);
+            font-size: 0.8em;
+            margin-top: 2px;
+        }
+
+        .event-category {
+            font-size: 1.5em;
+            padding: 8px;
+            border-radius: 50%;
+            background: var(--background-color);
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .event-category.rent { background: #fef3c7; }
+        .event-category.utilities { background: #d1fae5; }
+        .event-category.groceries { background: #ede9fe; }
+        .event-category.furniture { background: #fee2e2; }
+        .event-category.maintenance { background: #f3f4f6; }
+        .event-category.cleaning { background: #cffafe; }
+        .event-category.personal { background: #fed7aa; }
+
+        /* Event Filters */
+        .event-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .calendar-day {
+                min-height: 60px;
+                padding: 4px;
+            }
+            
+            .day-event {
+                font-size: 0.6em;
+            }
+            
+            .event-filters {
+                justify-content: center;
+            }
+            
+            .filter-btn {
+                flex: 1;
+                min-width: 80px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -389,6 +608,7 @@
             <button class="nav-tab" onclick="showTab('utilities')">⚡ Utilities</button>
             <button class="nav-tab" onclick="showTab('furniture')">🪑 Furniture</button>
             <button class="nav-tab" onclick="showTab('groceries')">🛒 Groceries</button>
+            <button class="nav-tab" onclick="showTab('calendar')">📅 Calendar</button>
         </div>
 
         <!-- Overview Tab -->
@@ -433,6 +653,45 @@
                     <div class="result-item">
                         <span class="result-label">Next settlement due:</span>
                         <span class="result-value">31 Aug, 2025</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📅 Upcoming Events</h2>
+                <div class="event-list" id="upcomingEvents">
+                    <div class="event-item">
+                        <div class="event-date">
+                            <div class="event-day">31</div>
+                            <div class="event-month">Aug</div>
+                        </div>
+                        <div class="event-details">
+                            <div class="event-title">Rent Payment Due</div>
+                            <div class="event-description">Monthly rent payment</div>
+                        </div>
+                        <div class="event-category rent">💰</div>
+                    </div>
+                    <div class="event-item">
+                        <div class="event-date">
+                            <div class="event-day">05</div>
+                            <div class="event-month">Sep</div>
+                        </div>
+                        <div class="event-details">
+                            <div class="event-title">Utilities Bill</div>
+                            <div class="event-description">Monthly utilities payment</div>
+                        </div>
+                        <div class="event-category utilities">⚡</div>
+                    </div>
+                    <div class="event-item">
+                        <div class="event-date">
+                            <div class="event-day">10</div>
+                            <div class="event-month">Sep</div>
+                        </div>
+                        <div class="event-details">
+                            <div class="event-title">Grocery Shopping</div>
+                            <div class="event-description">Weekly grocery run</div>
+                        </div>
+                        <div class="event-category groceries">🛒</div>
                     </div>
                 </div>
             </div>
@@ -798,6 +1057,81 @@
                 </div>
             </div>
         </div>
+
+        <!-- Calendar Tab -->
+        <div id="calendar" class="tab-content">
+            <div class="card">
+                <h2>📅 Household Calendar</h2>
+                <div class="calendar-controls">
+                    <button class="btn-secondary" onclick="previousMonth()">‹ Previous</button>
+                    <h3 id="currentMonth">August 2025</h3>
+                    <button class="btn-secondary" onclick="nextMonth()">Next ›</button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar will be generated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>➕ Add New Event</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Event Title</label>
+                        <input type="text" id="eventTitle" placeholder="Rent Payment">
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="eventDate" value="2025-08-31">
+                    </div>
+                    <div class="form-group">
+                        <label>Time</label>
+                        <input type="time" id="eventTime" value="09:00">
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="eventCategory">
+                            <option value="rent">💰 Rent</option>
+                            <option value="utilities">⚡ Utilities</option>
+                            <option value="groceries">🛒 Groceries</option>
+                            <option value="furniture">🪑 Furniture</option>
+                            <option value="maintenance">🔧 Maintenance</option>
+                            <option value="cleaning">🧹 Cleaning</option>
+                            <option value="personal">👤 Personal</option>
+                            <option value="other">📝 Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" id="eventDescription" placeholder="Monthly rent payment">
+                    </div>
+                    <div class="form-group">
+                        <label>Recurring</label>
+                        <select id="eventRecurring">
+                            <option value="none">No repeat</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn" onclick="addEvent()">📅 Add Event</button>
+            </div>
+
+            <div class="card">
+                <h2>📋 All Events</h2>
+                <div class="event-filters">
+                    <button class="btn-secondary filter-btn active" data-category="all" onclick="filterEvents('all')">All</button>
+                    <button class="btn-secondary filter-btn" data-category="rent" onclick="filterEvents('rent')">💰 Rent</button>
+                    <button class="btn-secondary filter-btn" data-category="utilities" onclick="filterEvents('utilities')">⚡ Utilities</button>
+                    <button class="btn-secondary filter-btn" data-category="groceries" onclick="filterEvents('groceries')">🛒 Groceries</button>
+                    <button class="btn-secondary filter-btn" data-category="maintenance" onclick="filterEvents('maintenance')">🔧 Maintenance</button>
+                </div>
+                <div class="event-list" id="allEventsList">
+                    <!-- Events will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -822,10 +1156,16 @@
             // Initialize charts when tabs are shown
             if (tabName === 'overview') {
                 setTimeout(initSpendingChart, 100);
+                updateUpcomingEvents(); // Refresh upcoming events
             } else if (tabName === 'utilities') {
                 setTimeout(() => {
                     initUtilitiesChart();
                     initUtilitiesBreakdownChart();
+                }, 100);
+            } else if (tabName === 'calendar') {
+                setTimeout(() => {
+                    generateCalendar();
+                    updateEventsList();
                 }, 100);
             }
         }
@@ -1317,12 +1657,295 @@
             });
         }
 
+        // Calendar and Events System
+        let currentDate = new Date();
+        let eventsData = [
+            {
+                id: 1,
+                title: 'Rent Payment Due',
+                date: '2025-08-31',
+                time: '09:00',
+                description: 'Monthly rent payment',
+                category: 'rent',
+                recurring: 'monthly'
+            },
+            {
+                id: 2,
+                title: 'Utilities Bill',
+                date: '2025-09-05',
+                time: '10:00',
+                description: 'Monthly utilities payment',
+                category: 'utilities',
+                recurring: 'monthly'
+            },
+            {
+                id: 3,
+                title: 'Grocery Shopping',
+                date: '2025-09-10',
+                time: '14:00',
+                description: 'Weekly grocery run',
+                category: 'groceries',
+                recurring: 'weekly'
+            },
+            {
+                id: 4,
+                title: 'Cleaning Day',
+                date: '2025-08-28',
+                time: '10:00',
+                description: 'Deep cleaning of the house',
+                category: 'cleaning',
+                recurring: 'weekly'
+            }
+        ];
+
+        // Calendar navigation
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            generateCalendar();
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            generateCalendar();
+        }
+
+        // Generate calendar
+        function generateCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            // Update month display
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            document.getElementById('currentMonth').textContent = `${monthNames[month]} ${year}`;
+            
+            // Get first day of month and number of days
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDayOfWeek = firstDay.getDay();
+            
+            // Generate calendar grid
+            let calendarHTML = '';
+            
+            // Add day headers
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                calendarHTML += `<div class="calendar-header">${day}</div>`;
+            });
+            
+            // Add empty cells for days before month starts
+            for (let i = 0; i < startingDayOfWeek; i++) {
+                const prevMonthDate = new Date(year, month, 0 - (startingDayOfWeek - 1 - i));
+                calendarHTML += `<div class="calendar-day other-month">
+                    <div class="day-number">${prevMonthDate.getDate()}</div>
+                    <div class="day-events"></div>
+                </div>`;
+            }
+            
+            // Add days of current month
+            const today = new Date();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayDate = new Date(year, month, day);
+                const dateString = dayDate.toISOString().split('T')[0];
+                const dayEvents = eventsData.filter(event => event.date === dateString);
+                
+                let dayClass = 'calendar-day';
+                if (dayDate.toDateString() === today.toDateString()) {
+                    dayClass += ' today';
+                }
+                if (dayEvents.length > 0) {
+                    dayClass += ' has-events';
+                }
+                
+                let eventsHTML = '';
+                dayEvents.slice(0, 3).forEach(event => {
+                    eventsHTML += `<div class="day-event ${event.category}" title="${event.title}">${event.title}</div>`;
+                });
+                if (dayEvents.length > 3) {
+                    eventsHTML += `<div class="day-event">+${dayEvents.length - 3} more</div>`;
+                }
+                
+                calendarHTML += `<div class="${dayClass}" onclick="selectCalendarDay('${dateString}')">
+                    <div class="day-number">${day}</div>
+                    <div class="day-events">${eventsHTML}</div>
+                </div>`;
+            }
+            
+            // Add empty cells for days after month ends
+            const totalCells = Math.ceil((daysInMonth + startingDayOfWeek) / 7) * 7;
+            const remainingCells = totalCells - (daysInMonth + startingDayOfWeek);
+            for (let i = 1; i <= remainingCells; i++) {
+                calendarHTML += `<div class="calendar-day other-month">
+                    <div class="day-number">${i}</div>
+                    <div class="day-events"></div>
+                </div>`;
+            }
+            
+            document.getElementById('calendarGrid').innerHTML = calendarHTML;
+        }
+
+        // Select calendar day
+        function selectCalendarDay(dateString) {
+            document.getElementById('eventDate').value = dateString;
+            showNotification(`Selected ${new Date(dateString).toLocaleDateString('en-US', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+            })}`);
+        }
+
+        // Add new event
+        function addEvent() {
+            const title = document.getElementById('eventTitle').value;
+            const date = document.getElementById('eventDate').value;
+            const time = document.getElementById('eventTime').value;
+            const category = document.getElementById('eventCategory').value;
+            const description = document.getElementById('eventDescription').value;
+            const recurring = document.getElementById('eventRecurring').value;
+            
+            if (!title || !date) {
+                showNotification('Please fill in title and date!', 'error');
+                return;
+            }
+            
+            const newEvent = {
+                id: Date.now(),
+                title,
+                date,
+                time,
+                description,
+                category,
+                recurring
+            };
+            
+            eventsData.push(newEvent);
+            eventsData.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            // Clear form
+            document.getElementById('eventTitle').value = '';
+            document.getElementById('eventDescription').value = '';
+            
+            // Update displays
+            generateCalendar();
+            updateEventsList();
+            updateUpcomingEvents();
+            
+            showNotification(`Event "${title}" added successfully!`);
+        }
+
+        // Update events list
+        function updateEventsList() {
+            const container = document.getElementById('allEventsList');
+            const currentFilter = document.querySelector('.filter-btn.active').dataset.category;
+            
+            let filteredEvents = eventsData;
+            if (currentFilter !== 'all') {
+                filteredEvents = eventsData.filter(event => event.category === currentFilter);
+            }
+            
+            if (filteredEvents.length === 0) {
+                container.innerHTML = '<div class="result-item"><span class="result-label">No events found</span></div>';
+                return;
+            }
+            
+            const eventsHTML = filteredEvents.map(event => {
+                const eventDate = new Date(event.date);
+                const day = eventDate.getDate();
+                const month = eventDate.toLocaleDateString('en-US', { month: 'short' });
+                const categoryIcons = {
+                    rent: '💰', utilities: '⚡', groceries: '🛒', furniture: '🪑',
+                    maintenance: '🔧', cleaning: '🧹', personal: '👤', other: '📝'
+                };
+                
+                return `
+                    <div class="event-item">
+                        <div class="event-date">
+                            <div class="event-day">${day}</div>
+                            <div class="event-month">${month}</div>
+                        </div>
+                        <div class="event-details">
+                            <div class="event-title">${event.title}</div>
+                            <div class="event-description">${event.description}</div>
+                            <div class="event-time">${event.time} ${event.recurring !== 'none' ? `• Repeats ${event.recurring}` : ''}</div>
+                        </div>
+                        <div class="event-category ${event.category}">${categoryIcons[event.category]}</div>
+                        <button class="btn-secondary" onclick="deleteEvent(${event.id})" title="Delete event">🗑️</button>
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = eventsHTML;
+        }
+
+        // Filter events
+        function filterEvents(category) {
+            // Update active filter button
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-category="${category}"]`).classList.add('active');
+            
+            // Update events list
+            updateEventsList();
+        }
+
+        // Delete event
+        function deleteEvent(eventId) {
+            if (confirm('Are you sure you want to delete this event?')) {
+                eventsData = eventsData.filter(event => event.id !== eventId);
+                generateCalendar();
+                updateEventsList();
+                updateUpcomingEvents();
+                showNotification('Event deleted successfully!');
+            }
+        }
+
+        // Update upcoming events in overview
+        function updateUpcomingEvents() {
+            const container = document.getElementById('upcomingEvents');
+            const today = new Date();
+            const upcomingEvents = eventsData
+                .filter(event => new Date(event.date) >= today)
+                .slice(0, 5);
+            
+            if (upcomingEvents.length === 0) {
+                container.innerHTML = '<div class="result-item"><span class="result-label">No upcoming events</span></div>';
+                return;
+            }
+            
+            const eventsHTML = upcomingEvents.map(event => {
+                const eventDate = new Date(event.date);
+                const day = eventDate.getDate();
+                const month = eventDate.toLocaleDateString('en-US', { month: 'short' });
+                const categoryIcons = {
+                    rent: '💰', utilities: '⚡', groceries: '🛒', furniture: '🪑',
+                    maintenance: '🔧', cleaning: '🧹', personal: '👤', other: '📝'
+                };
+                
+                return `
+                    <div class="event-item">
+                        <div class="event-date">
+                            <div class="event-day">${day}</div>
+                            <div class="event-month">${month}</div>
+                        </div>
+                        <div class="event-details">
+                            <div class="event-title">${event.title}</div>
+                            <div class="event-description">${event.description}</div>
+                        </div>
+                        <div class="event-category ${event.category}">${categoryIcons[event.category]}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = eventsHTML;
+        }
+
         // Initialize the overview chart when page loads
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(initSpendingChart, 100);
             toggleSalaryInputs(); // Initialize input visibility
             updateUtilitiesDisplay();
             updateUtilitiesHistory();
+            generateCalendar(); // Initialize calendar
+            updateEventsList(); // Initialize events list
+            updateUpcomingEvents(); // Initialize upcoming events
         });
     </script>
 </body>
