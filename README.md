@@ -5,29 +5,34 @@ A beautiful, modern web application for managing shared household expenses betwe
 ## ✨ Features
 
 ### 📊 Overview Dashboard
+
 - Monthly spending trends visualization
 - Current balance tracking
 - Summary cards for all expense categories
 - Settlement due dates
 
 ### 🏠 Rent & Salary Management
+
 - Proportional rent splitting based on income
 - Equal split option
 - Custom ratio support
 - Historical salary and rent payment tracking
 
 ### ⚡ Utilities Tracking
+
 - Variable expenses (electricity, gas)
 - Fixed expenses (internet, TV, mobile bundles)
 - Monthly trend charts
 - Fair 50/50 splitting
 
 ### 🪑 Furniture Expenses
+
 - Categorized furniture tracking (living room, bedroom, kitchen, etc.)
 - Multiple payment method support (joint account, individual payments)
 - Investment tracking and sharing calculations
 
 ### 🛒 Groceries Management
+
 - Store-by-store expense tracking
 - Multiple payment sources
 - Personal balance calculations
@@ -48,19 +53,21 @@ Visit the live application: [https://gcbaptista.github.io/household-dashboard](h
 ## 🛠️ Local Development
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/gcbaptista/household-dashboard.git
    cd household-dashboard
    ```
 
 2. Open `index.html` in your browser or use a local server:
+
    ```bash
    # Using Python
    python -m http.server 8000
-   
+
    # Using Node.js
    npx serve .
-   
+
    # Using PHP
    php -S localhost:8000
    ```
@@ -70,18 +77,22 @@ Visit the live application: [https://gcbaptista.github.io/household-dashboard](h
 ## 📱 Features in Detail
 
 ### Smart Rent Splitting
+
 The application automatically calculates fair rent contributions based on:
+
 - **Proportional**: Split based on salary ratios
 - **Equal**: 50/50 split regardless of income
 - **Custom**: Define your own percentage split
 
 ### Expense Tracking
+
 - Real-time balance calculations
 - Multiple payment source tracking (joint account vs. personal)
 - Historical data visualization
 - Category-based organization
 
 ### Modern UI/UX
+
 - Clean, intuitive interface
 - Responsive design for all devices
 - Smooth animations and transitions
@@ -91,23 +102,26 @@ The application automatically calculates fair rent contributions based on:
 ## 🔧 Customization
 
 ### Colors and Theming
+
 The application uses CSS custom properties for easy theming. Modify the `:root` variables in the CSS:
 
 ```css
 :root {
-    --primary-color: #667eea;
-    --secondary-color: #764ba2;
-    --accent-color: #f093fb;
-    /* ... more variables */
+  --primary-color: #667eea;
+  --secondary-color: #764ba2;
+  --accent-color: #f093fb;
+  /* ... more variables */
 }
 ```
 
 ### Adding New Expense Categories
+
 Extend the application by adding new tabs and corresponding JavaScript functions following the existing patterns.
 
 ## 📝 Data Persistence
 
 Currently, the application is client-side only. Data is reset on page refresh. For persistent data storage, consider:
+
 - Local Storage implementation
 - Integration with Firebase/Supabase
 - Backend API development
